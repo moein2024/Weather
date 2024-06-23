@@ -4,7 +4,7 @@ Welcome to the Weather Forecast Project repository! This project leverages the O
 
 How to Use
 
-1. Generate Your Own API KEY:
+1. Generate Your Own API KEY And Replace In The Code:
 <pre>
 https://home.openweathermap.org/api_keys
 </pre>
