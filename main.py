@@ -1,39 +1,62 @@
-import requests
+"""
+Module providing a weather forecast.
+"""
 import datetime
+import requests
 import pytz
 
-def degrees_to_direction(degrees):
-    if degrees >= 337.5 or degrees < 22.5:
-        return 'North'
-    elif 22.5 <= degrees < 67.5:
-        return 'Northeast'
-    elif 67.5 <= degrees < 112.5:
-        return 'East'
-    elif 112.5 <= degrees < 157.5:
-        return 'Southeast'
-    elif 157.5 <= degrees < 202.5:
-        return 'South'
-    elif 202.5 <= degrees < 247.5:
-        return 'Southwest'
-    elif 247.5 <= degrees < 292.5:
-        return 'West'
-    elif 292.5 <= degrees < 337.5:
-        return 'Northwest'
-    else:
-        return 'Unknown'
 
-api_key = '3244ac81fa8769eaffb85d6cb0cf480e'  # Replace with your API key
+API_KEY = 'ac883244876cb0cf481fab0e69eaff5d'  # Replace with your API key, This won't Work
+
+
+def degrees_to_direction(degrees):
+    """
+    Convert wind direction in degrees to a compass direction.
+
+    Args:
+        degrees (float): Wind direction in degrees.
+
+    Returns:
+        str: Compass direction corresponding to the given degree.
+    """
+    directions = {
+        (337.5, 360): 'North',
+        (0, 22.5): 'North',
+        (22.5, 67.5): 'Northeast',
+        (67.5, 112.5): 'East',
+        (112.5, 157.5): 'Southeast',
+        (157.5, 202.5): 'South',
+        (202.5, 247.5): 'Southwest',
+        (247.5, 292.5): 'West',
+        (292.5, 337.5): 'Northwest'
+    }
+
+    for (start, end), direction in directions.items():
+        if start <= degrees < end or (start > end and (degrees >= start or degrees < end)):
+            return direction
+    return 'Unknown'
+
 
 def get_weather_forecast(city):
-    url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}'
-    response = requests.get(url)
+    """
+    Fetch and display the weather forecast for a specified city.
+
+    Args:
+        city (str): Name of the city to get the weather forecast for.
+
+    Returns:
+        None
+    """
+    url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}'
+    response = requests.get(url, timeout=10)
     if response.status_code == 200:
         data = response.json()
         print(f"City: {data['city']['name']}, {data['city']['country']}")
-        
+
         # Iterate through each forecast entry in the 'list'
         for forecast in data['list']:
-            forecast_time = datetime.datetime.fromtimestamp(forecast['dt']).astimezone(pytz.timezone('Asia/Tehran'))    # You Can Put Your Time Zone Like Europe/London
+            forecast_time = datetime.datetime.fromtimestamp(forecast['dt']).astimezone(
+                pytz.timezone('Asia/Tehran'))  # You Can Put Your Time Zone Like Europe/London
             print(f"\nForecast for {forecast_time.strftime('%Y-%m-%d %H:%M:%S')}:")
             print(f"Weather: {forecast['weather'][0]['description']}")
             print(f"Temperature: {forecast['main']['temp'] - 273.15:.2f} °C")
@@ -43,6 +66,7 @@ def get_weather_forecast(city):
     else:
         print(f"Error: City '{city}' not found. Please check the city name and try again.")
 
-#usage:
+
+# usage:
 city_name = input("Enter city name: ")
 get_weather_forecast(city_name)
